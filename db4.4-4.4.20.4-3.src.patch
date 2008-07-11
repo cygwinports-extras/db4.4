@@ -1,0 +1,88 @@
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x configure -x config.hin -x libtool.ac -x db.jar origsrc/db-4.4.20/dist/Makefile.in src/db-4.4.20/dist/Makefile.in
+--- origsrc/db-4.4.20/dist/Makefile.in	2005-11-08 06:47:22.000000000 -0600
++++ src/db-4.4.20/dist/Makefile.in	2008-01-01 22:15:55.078125000 -0600
+@@ -124,6 +124,7 @@
+ # Tcl support is optional and requires shared libraries.
+ ##################################################
+ TCL_INCLUDE_SPEC=	@TCL_INCLUDE_SPEC@
++TSOLINK=		@MAKEFILE_TSOLINK@
+ LIBTSO_LIBS=	@LIBTSO_LIBS@ @LIBSO_LIBS@
+ libtso_base=	libdb_tcl
+ libtso=		$(libtso_base)-$(LIBVERSION)@MODSUFFIX@
+@@ -736,7 +737,7 @@
+ 
+ # Shared Tcl library.
+ $(libtso_target): $(TCL_OBJS) $(C_OBJS)
+-	$(SOLINK) @LIBTSO_MODULE@ $(SOFLAGS) $(LDFLAGS) \
++	$(TSOLINK) @LIBTSO_MODULE@ $(SOFLAGS) $(LDFLAGS) \
+ 	    -o $@ $(TCL_OBJS) $(C_OBJS) $(LIBTSO_LIBS)
+ 
+ ##################################################
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x configure -x config.hin -x libtool.ac -x db.jar origsrc/db-4.4.20/dist/aclocal/tcl.ac src/db-4.4.20/dist/aclocal/tcl.ac
+--- origsrc/db-4.4.20/dist/aclocal/tcl.ac	2005-06-28 15:45:25.000000000 -0500
++++ src/db-4.4.20/dist/aclocal/tcl.ac	2008-01-01 22:15:55.078125000 -0600
+@@ -50,7 +50,7 @@
+ 
+ 	    # First check to see if --with-tclconfig was specified.
+ 	    if test "${with_tclconfig}" != no; then
+-		if test -f "${with_tclconfig}/tclConfig.sh" ; then
++		if test -e "${with_tclconfig}/tclConfig.sh" ; then
+ 		    ac_cv_c_tclconfig=`(cd ${with_tclconfig}; pwd)`
+ 		else
+ 		    AC_MSG_ERROR([${with_tclconfig} directory doesn't contain tclConfig.sh])
+@@ -59,8 +59,8 @@
+ 
+ 	    # check in a few common install locations
+ 	    if test x"${ac_cv_c_tclconfig}" = x ; then
+-		for i in `ls -d /usr/local/lib 2>/dev/null` ; do
+-		    if test -f "$i/tclConfig.sh" ; then
++		for i in `ls -d /usr/lib /usr/local/lib 2>/dev/null` ; do
++		    if test -e "$i/tclConfig.sh" ; then
+ 			ac_cv_c_tclconfig=`(cd $i; pwd)`
+ 			break
+ 		    fi
+@@ -80,7 +80,7 @@
+ AC_DEFUN(SC_LOAD_TCLCONFIG, [
+ 	AC_MSG_CHECKING([for existence of $TCL_BIN_DIR/tclConfig.sh])
+ 
+-	if test -f "$TCL_BIN_DIR/tclConfig.sh" ; then
++	if test -e "$TCL_BIN_DIR/tclConfig.sh" ; then
+ 		AC_MSG_RESULT([loading])
+ 		. $TCL_BIN_DIR/tclConfig.sh
+ 	else
+@@ -110,7 +110,7 @@
+ 	aix4.[[2-9]].*)
+ 		LIBTSO_LIBS="$LIBTSO_LIBS $TCL_LIB_SPEC $TCL_LIB_FLAG"
+ 		LIBTSO_LIBS="$LIBTSO_LIBS -L$TCL_EXEC_PREFIX/lib -ltcl$TCL_VERSION";;
+-	aix*)
++	aix*|cygwin*)
+ 		LIBTSO_LIBS="$LIBTSO_LIBS $TCL_LIB_SPEC $TCL_LIB_FLAG";;
+ 	esac
+ 	AC_SUBST(TCL_BIN_DIR)
+diff -urN -x CYGWIN-PATCHES -x 'aclocal.m4*' -x autom4te.cache -x config.cache -x config.log -x config.status -x config.h -x config.h.in -x ABOUT-NLS -x Makefile.in.in -x Makevars.template -x '*SlackBuild*' -x '*.egg-info' -x '*.class' -x '*.pyc' -x '*.mo' -x '*.gmo' -x '*.orig' -x '*.rej' -x '*.spec' -x '*.temp' -x '*~' -x '*.stackdump' -x COPYING -x INSTALL -x compile -x config-ml.in -x config.guess -x config.sub -x depcomp -x elisp-comp -x install-sh -x ltmain.sh -x mdate-sh -x missing -x mkinstalldirs -x py-compile -x symlink-tree -x texinfo.tex -x ylwrap -x config.rpath -x omf.make -x xmldocs.make -x gnome-doc-utils.make -x gnome-doc-utils.m4 -x intltool.m4 -x intltool-extract -x intltool-extract.in -x intltool-merge -x intltool-merge.in -x intltool-update -x intltool-update.in -x configure -x config.hin -x libtool.ac -x db.jar origsrc/db-4.4.20/dist/configure.ac src/db-4.4.20/dist/configure.ac
+--- origsrc/db-4.4.20/dist/configure.ac	2005-10-14 15:52:29.000000000 -0500
++++ src/db-4.4.20/dist/configure.ac	2008-01-01 22:15:55.437500000 -0600
+@@ -57,6 +57,7 @@
+ AC_SUBST(MAKEFILE_CXX)
+ AC_SUBST(MAKEFILE_CXXLINK)
+ AC_SUBST(MAKEFILE_SOLINK)
++AC_SUBST(MAKEFILE_TSOLINK)
+ AC_SUBST(MAKEFILE_XSOLINK)
+ AC_SUBST(OSDIR)
+ AC_SUBST(PATH_SEPARATOR)
+@@ -289,6 +290,7 @@
+ 
+ MAKEFILE_CC="\$(LIBTOOL) --mode=compile ${MAKEFILE_CC}"
+ MAKEFILE_SOLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CCLINK} -avoid-version"
++MAKEFILE_TSOLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CCLINK} -module -avoid-version"
+ MAKEFILE_CCLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CCLINK}"
+ MAKEFILE_CXX="\$(LIBTOOL) --mode=compile ${MAKEFILE_CXX}"
+ MAKEFILE_XSOLINK="\$(LIBTOOL) --mode=link ${MAKEFILE_CXXLINK} -avoid-version"
+@@ -299,6 +301,7 @@
+ case "$host_os" in
+ cygwin* | mingw*)
+ 	MAKEFILE_SOLINK="$MAKEFILE_SOLINK -no-undefined"
++	MAKEFILE_TSOLINK="$MAKEFILE_TSOLINK -no-undefined"
+ 	MAKEFILE_XSOLINK="$MAKEFILE_XSOLINK -no-undefined";;
+ esac
+ 
